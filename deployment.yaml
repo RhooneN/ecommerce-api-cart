@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shopping_cart
+  labels:
+    app: shopping_cart
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: shopping_cart
+  template:
+    metadata:
+      labels:
+        app: shopping_cart
+    spec:
+      containers:
+        - name: shopping_cart
+          image: cyamez/shopping_cart:latest
+          ports:
+            - containerPort: 8002

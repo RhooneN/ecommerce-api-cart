@@ -1,0 +1,210 @@
+openapi: 3.0.3
+info:
+  title: Your Project API
+  version: 1.0.0
+  description: Your project description
+paths:
+  /cart/:
+    get:
+      operationId: cart_retrieve
+      tags:
+      - cart
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cart'
+          description: ''
+  /cart/{product_id}/:
+    put:
+      operationId: cart_update
+      parameters:
+      - in: path
+        name: product_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - cart
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CartItemUpdate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CartItemUpdate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CartItemUpdate'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CartItemUpdate'
+          description: ''
+    patch:
+      operationId: cart_partial_update
+      parameters:
+      - in: path
+        name: product_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - cart
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedCartItemUpdate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedCartItemUpdate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedCartItemUpdate'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CartItemUpdate'
+          description: ''
+  /cart/add/:
+    post:
+      operationId: cart_add_create
+      tags:
+      - cart
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CartItem'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CartItem'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CartItem'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CartItem'
+          description: ''
+  /cart/empty/:
+    delete:
+      operationId: cart_empty_destroy
+      tags:
+      - cart
+      responses:
+        '204':
+          description: No response body
+  /cart/remove/{id}/:
+    delete:
+      operationId: cart_remove_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - cart
+      responses:
+        '204':
+          description: No response body
+  /command/:
+    post:
+      operationId: command_create
+      tags:
+      - command
+      responses:
+        '200':
+          description: No response body
+components:
+  schemas:
+    Cart:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        user_id:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+          nullable: true
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CartItem'
+          readOnly: true
+        total:
+          type: string
+          readOnly: true
+        items_count:
+          type: string
+          readOnly: true
+      required:
+      - id
+      - items
+      - items_count
+      - total
+    CartItem:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        product_id:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        quantity:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        name:
+          type: string
+          readOnly: true
+        price:
+          type: string
+          readOnly: true
+        subtotal:
+          type: string
+          readOnly: true
+        product_details:
+          type: string
+          readOnly: true
+      required:
+      - id
+      - name
+      - price
+      - product_details
+      - product_id
+      - subtotal
+    CartItemUpdate:
+      type: object
+      properties:
+        quantity:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+    PatchedCartItemUpdate:
+      type: object
+      properties:
+        quantity:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64

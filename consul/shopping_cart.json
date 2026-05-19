@@ -1,0 +1,9 @@
+{
+ 
+    "name": "shopping_cart",
+    "port": 8002,
+    "check": {
+      "http": "http://shopping_cart:8002/health/",
+      "interval": "10s"
+  }
+}
