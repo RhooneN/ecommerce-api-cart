@@ -31,8 +31,8 @@ CORS_ALLOWED_ORIGINS = [
 # ============================================
 # PRODUCT SERVICE CONFIGURATION (FIXED)
 # ============================================
-PRODUCT_SERVICE_URL = os.environ.get('PRODUCT_SERVICE_URL', 'http://localhost:8001/')  # ✅ Correct port
-PRODUCT_SERVICE_TOKEN = os.environ.get('PRODUCT_SERVICE_TOKEN', '')  # Optional auth token
+PRODUCT_SERVICE_URL = os.environ.get('PRODUCT_SERVICE_URL', 'http://localhost:8001/')# ✅Correct port
+PRODUCT_SERVICE_TOKEN = os.environ.get('PRODUCT_SERVICE_TOKEN', "")# Optional auth token
 
 # Timeout configurations for product service
 PRODUCT_SERVICE_CONNECT_TIMEOUT = 2  # seconds - connection timeout

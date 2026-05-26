@@ -697,3 +697,4 @@ ERROR 2025-10-11 12:32:53,584 serializers 15698 131713322444480 No product data 
 INFO 2025-10-11 12:33:29,883 serializers 15698 131713322444480 Product 4 fetched successfully from service
 INFO 2025-10-11 12:35:18,783 serializers 15698 131713322444480 Product 1 fetched successfully from service
 INFO 2025-10-11 13:15:57,407 serializers 15698 131713305659072 Product 4 fetched successfully from service
+INFO 2026-05-26 09:07:23,587 serializers 176533 131274979145408 Product 1 fetched successfully from service
