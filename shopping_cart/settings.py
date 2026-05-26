@@ -45,7 +45,7 @@ CORS_ALLOW_HEADERS = [
     'x-csrftoken',
 ]
 
-CSRF_TRUSTED_ORIGINS = ["*"] if DEBUG else [".onrender.com"]
+# ~ CSRF_TRUSTED_ORIGINS = [*] if DEBUG else [".onrender.com"]
 
 CSRF_COOKIE_SAMESITE = "None"
 
