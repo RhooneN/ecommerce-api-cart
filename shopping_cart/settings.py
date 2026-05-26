@@ -19,14 +19,35 @@ DEBUG = os.environ.get("DEBUG", "False").lower() == "true"
 
 ALLOWED_HOSTS = ["*"] if DEBUG else [".onrender.com"]
     
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:8000",  # Auth service
-    "http://127.0.0.1:8000",  # Auth service
-    "http://localhost:8001",  # Product service
-    "http://127.0.0.1:8001",  # Product service
-    "http://localhost:8002",  # This cart service
-    "http://127.0.0.1:8002",  # This cart service
+#SESSION CORS && CRFS
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # or 'cache' or 'file'
+SESSION_COOKIE_NAME = 'sessionid'
+SESSION_COOKIE_AGE = 1209600  # 2 weeks in seconds
+SESSION_COOKIE_DOMAIN = None
+SESSION_COOKIE_SAMESITE = "None"
+SESSION_COOKIE_HTTP_ONLY = True
+
+
+# For development, you might need to disable secure cookies
+SESSION_COOKIE_SECURE = True  # True in production with HTTPS
+CSRF_COOKIE_SECURE = True
+CSRF_COOKIE_SAMESITE = "None" 	
+
+CORS_ALLOWED_ORIGINS = ["*"] if DEBUG else [".onrender.com"]
+
+# Allow credentials (cookies, auth headers)
+CORS_ALLOW_CREDENTIALS = True
+
+# Allow specific headers
+CORS_ALLOW_HEADERS = [
+    'content-type',
+    'authorization',
+    'x-csrftoken',
 ]
+
+CSRF_TRUSTED_ORIGINS = ["*"] if DEBUG else [".onrender.com"]
+
+CSRF_COOKIE_SAMESITE = "None"
 
 # ============================================
 # PRODUCT SERVICE CONFIGURATION (FIXED)
@@ -113,13 +134,7 @@ CACHES = {
     }
 }
 
-# Session configuration
-SESSION_ENGINE = 'django.contrib.sessions.backends.db'
-SESSION_COOKIE_AGE = 86400  # 24 hours
-SESSION_SAVE_EVERY_REQUEST = True
 
-CSRF_COOKIE_SECURE = False
-CSRF_COOKIE_HTTPONLY = False
 LOGIN_URL = "http://127.0.0.1:8000/auth/login/"
 
 ROOT_URLCONF = 'shopping_cart.urls'
