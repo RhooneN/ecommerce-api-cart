@@ -9,7 +9,6 @@ urlpatterns = [
     path('cart/remove/<int:pk>/', RemoveFromCartView.as_view(), name='remove-from-cart'),
     path('cart/<int:product_id>/', views.UpdateItemView.as_view(), name='update-item'),
     path('cart/empty/', EmptyCartView.as_view(), name='empty'),  
-    path('command/', views.MergeCartView.as_view(), name="command"),
     path("health/", views.health),
      
     #Swagger

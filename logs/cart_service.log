@@ -699,3 +699,18 @@ INFO 2025-10-11 12:35:18,783 serializers 15698 131713322444480 Product 1 fetched
 INFO 2025-10-11 13:15:57,407 serializers 15698 131713305659072 Product 4 fetched successfully from service
 INFO 2026-05-26 09:07:23,587 serializers 176533 131274979145408 Product 1 fetched successfully from service
 INFO 2026-05-26 09:22:16,635 serializers 191647 138082875602624 Product 1 fetched successfully from service
+WARNING 2026-05-26 10:37:03,769 serializers 213157 135069729552064 Connection error for product 1: HTTPConnectionPool(host='localhost', port=8001): Max retries exceeded with url: /products/1/ (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7ad864336720>: Failed to establish a new connection: [Errno 111] Connection refused'))
+WARNING 2026-05-26 10:37:03,791 serializers 213157 135069729552064 Connection error for product 1: HTTPConnectionPool(host='localhost', port=8001): Max retries exceeded with url: /products/1/ (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7ad864336bd0>: Failed to establish a new connection: [Errno 111] Connection refused'))
+WARNING 2026-05-26 10:37:03,800 serializers 213157 135069729552064 Connection error for product 1: HTTPConnectionPool(host='localhost', port=8001): Max retries exceeded with url: /products/1/ (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7ad8651fb2f0>: Failed to establish a new connection: [Errno 111] Connection refused'))
+ERROR 2026-05-26 10:37:03,800 serializers 213157 135069729552064 No product data available for product 1, using minimal fallback
+INFO 2026-05-26 10:37:53,364 serializers 213157 135069729552064 Product 1 fetched successfully from service
+WARNING 2026-05-27 09:27:44,728 serializers 56518 126874386691776 Connection error for product 1: HTTPConnectionPool(host='localhost', port=8001): Max retries exceeded with url: /products/1/ (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7364440867b0>: Failed to establish a new connection: [Errno 111] Connection refused'))
+WARNING 2026-05-27 09:27:44,751 serializers 56518 126874386691776 Connection error for product 1: HTTPConnectionPool(host='localhost', port=8001): Max retries exceeded with url: /products/1/ (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7364440a14c0>: Failed to establish a new connection: [Errno 111] Connection refused'))
+WARNING 2026-05-27 09:27:44,756 serializers 56518 126874386691776 Connection error for product 1: HTTPConnectionPool(host='localhost', port=8001): Max retries exceeded with url: /products/1/ (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7364440a1be0>: Failed to establish a new connection: [Errno 111] Connection refused'))
+ERROR 2026-05-27 09:27:44,757 serializers 56518 126874386691776 No product data available for product 1, using minimal fallback
+INFO 2026-05-27 09:28:05,094 serializers 56518 126874386691776 Product 1 fetched successfully from service
+INFO 2026-05-27 09:29:52,246 serializers 56872 136260130698944 Product 1 fetched successfully from service
+INFO 2026-05-27 10:47:15,157 serializers 67148 135728626398912 Product 1 fetched successfully from service
+INFO 2026-05-28 12:20:09,028 serializers 45476 132149164373696 Product 1 fetched successfully from service
+INFO 2026-05-28 12:38:24,451 serializers 45476 132149164373696 Product 1 fetched successfully from service
+INFO 2026-05-28 12:45:47,125 serializers 45476 132149164373696 Product 1 fetched successfully from service

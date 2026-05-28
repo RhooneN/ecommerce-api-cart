@@ -9,66 +9,34 @@ from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from shared.simple_permissions import IsAuth, IsAuthenticatedOrReadOnly, IsAdmin
 from django.http import JsonResponse
+import logging
+
+logger = logging.getLogger(__name__)
 
 def health(request):
     return JsonResponse({"status": "ok"})
 
-class MergeCartView(APIView):
-    permission_classes = [IsAuth] 
-
-    def post(self, request, *args, **kwargs):
-        user_id = request.user.id 
-        cart_token = request.data.get("cart_token")
-
-        if not cart_token:
-            return Response({"error": "cart_token required. Start by adding item to cart"}, status=400)
-
-        # 1. Find anonymous cart by token
-        anonymous_cart = Panier.objects.filter(cart_token=cart_token, user_id__isnull=True, is_active=True).first()
-
-        # 2. Find or create user cart
-        user_cart, _ = Panier.objects.get_or_create(user_id=user_id, is_active=True)
-
-        # 3. Merge items
-        if anonymous_cart:
-            for item in anonymous_cart.items.all():
-                existing = user_cart.items.filter(product_id=item.product_id).first()
-                if existing:
-                    existing.quantity += item.quantity
-                    existing.save()
-                else:
-                    item.cart = user_cart
-                    item.save()
-            anonymous_cart.delete()
-
-        return Response({"message": "Carts merged successfully", "cart_id": user_cart.id})
-
-
 
 class CartRetrieveView(generics.RetrieveAPIView):
     serializer_class = CartSerializer
-    permission_classes = []
+    permission_classes = [IsAuth]
 
     def get_object(self):
         try:
-            # Anonymous user
-            session_key = self.request.query_params.get("king")
-            if not session_key:
-                # Ensure session exists
-                if not self.request.session.session_key:
-                    self.request.session.create()
-                session_key = self.request.session.session_key
-            panier, _ = Panier.objects.get_or_create(	session_key=session_key)
+            
+            panier, _ = Panier.objects.get_or_create(user_id=self.request.user.user_id)
             return panier
             
         except Exception as e:
             # Log the error for debugging
+            logger.error(f"Failed to get cart because{e}")
             raise
 
     def retrieve(self, request, *args, **kwargs):
         try:
             return super().retrieve(request, *args, **kwargs)
         except Exception as e:
+            logger.error(f"Failed to fetch cart  because{e}")
             return Response(
                 {"error": "Failed to retrieve cart", "details": str(e)},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
@@ -77,18 +45,11 @@ class CartRetrieveView(generics.RetrieveAPIView):
 
 class AddToCartView(generics.CreateAPIView):
     serializer_class = CartItemSerializer
-    permission_classes = []
+    permission_classes = [IsAuth]
 
     def create(self, request, *args, **kwargs):
-        session_key = self.request.query_params.get("king")
-
-        if not session_key:
-                # Ensure session exists
-                if not self.request.session.session_key:
-                    self.request.session.create()
-                session_key = self.request.session.session_key
-                
-        cart, _ = Panier.objects.get_or_create(session_key=session_key)
+        
+        cart, _ = Panier.objects.get_or_create(user_id=request.user.user_id)
             
         try:
             product_id = int(request.data.get('product_id'))
@@ -110,7 +71,7 @@ class AddToCartView(generics.CreateAPIView):
             resp = f"You had {cart_item.quantity} and modify it"
         cart_item.quantity = quantity
         cart_item.save()
-
+        print("cart", cart.user_id)
         return Response({"message": "Item added to cart", "updating": f"{resp or None}"}, status=status.HTTP_201_CREATED)
 
 
@@ -118,19 +79,16 @@ class AddToCartView(generics.CreateAPIView):
 
 class RemoveFromCartView(generics.DestroyAPIView):
     serializer_class = CartItemDeleteSerializer
-    permission_classes = []
+    permission_classes = [IsAuth]
 
     def delete(self, request, *args, **kwargs):
-        
-        session_key = self.request.session.session_key
-        if  not session_key:
-            self.request.session.create()
-            return Response({'User dont have a cart actually'}, status=status.HTTP_404_NOT_FOUND)
-            # ~ session_key = self.request.session.session_key
+       
+           
         try:    
-            cart = Panier.objects.get(session_key=session_key)
-        except Panier.DoesNotExist:
-            return Response({'User dont have a cart actually'}, status=status.HTTP_404_NOT_FOUND)
+            cart, _ = Panier.objects.get_or_create(user_id=request.user.user_id)
+        except Exception as e:
+            logger.error(f"Failed to fetch cart because{e}")
+            return Response({'error': e}, status=status.HTTP_404_NOT_FOUND)
         
         pk = kwargs.get('pk')
         
@@ -144,20 +102,20 @@ class RemoveFromCartView(generics.DestroyAPIView):
             
 class UpdateItemView(generics.UpdateAPIView):
     serializer_class = CartItemUpdateSerializer
-    permission_classes = []
+    permission_classes = [IsAuth]
     queryset = CartItem.objects.all()
     lookup_field = 'product_id'
 	
     def patch(self, request, id):
         try:
-            session_key = self.request.session.session_key
-            if  not session_key:
-                self.request.session.create()
-                return Response({'User dont have a cart actually'}, status=status.HTTP_404_NOT_FOUND)
+            
             quantity = self.request.data.get('quantity')
             if quantity < 1:
                 return Response({"error": "Quantity must be positive"}, status=status.HTTP_400_BAD_REQUEST)
-            cart = Panier.objects.get(session_key=session_key)
+            #The cart will be created and the objet added even when the user neverhad a cart and its his first time selecting the item
+            #in this case the update is simply an add. The will of the user is to have this item in his cart at chechout
+            cart, _ = Panier.objects.get_or_create(user_id=request.user.user_id) 
+           
             item = CartItem.objects.get(cart=cart, product_id=id)
             item.quantity = int(quantity) # is the quantity a safe data sanitized here?
             item.save()
@@ -165,26 +123,23 @@ class UpdateItemView(generics.UpdateAPIView):
         except CartItem.DoesNotExist:
             return Response({"error": "Item not found in cart"}, status=status.HTTP_404_NOT_FOUND)
         except (ValueError, TypeError):
+            logger.error(f"Failed to update item  because{e}")
             return Response({"error": "value error "}, status=status.HTTP_404_NOT_FOUND)
             
 class EmptyCartView(generics.DestroyAPIView):
     serializer_class = CartSerializer
-    permission_classes = []
+    permission_classes = [IsAuth]
 
-    def delete(self, request, *args, **kwargs):
-        session_key = request.query_params.get("king")
-        if not session_key:
-            session_key = request.session.session_key
-        if  not session_key:
-            self.request.session.create()
-            return Response({"User doesn' t have a cart actually"}, status=status.HTTP_404_NOT_FOUND)
-                
+    def post(self, request, *args, **kwargs):
+           
         try:    
-                cart = Panier.objects.get(session_key=session_key)
+                cart, created = Panier.objects.get_or_create(user_id=request.user.user_id)
+                if created:
+                     return Response({"message": "Cart emptied successfully "}, status=status.HTTP_204_NO_CONTENT)
                 cart.items.all().delete()
-                # ~ for item in cart.items.all():
-                     # ~ item.delete()
-                return Response({"message": "User cart removed "}, status=status.HTTP_204_NO_CONTENT)
-        except Panier.DoesNotExist:
-                return Response({"User dont doesn' t have a cart actually"}, status=status.HTTP_404_NOT_FOUND)
+                
+                return Response({"message": "Cart emptied successfully "}, status=status.HTTP_200_OK)
+        except Exception as e:
+            logger.error(f"error while emptying cart  because{e}")
+            return Response({"error": f"{e}"}, status=status.HTTP_404_NOT_FOUND)
         
