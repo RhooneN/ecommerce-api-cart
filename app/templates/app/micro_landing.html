@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Panier - Documentation Interactive</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #2d3748;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .logo svg {
+            width: 32px;
+            height: 32px;
+        }
+
+        .version-badge {
+            background: #667eea;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        /* Hero */
+        .hero {
+            padding: 4rem 0;
+            color: white;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: white;
+            color: #667eea;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.5);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        /* Main Content */
+        main {
+            padding: 2rem 0 4rem;
+        }
+
+        .section-title {
+            color: white;
+            font-size: 2rem;
+            margin: 2rem 0 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .endpoint-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .endpoint-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-left: 5px solid #667eea;
+        }
+
+        .endpoint-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+        }
+
+        .method {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            margin-right: 0.5rem;
+            color: white;
+        }
+
+        .method.get { background: #48bb78; }
+        .method.post { background: #4299e1; }
+        .method.put { background: #ed8936; }
+        .method.patch { background: #9f7aea; }
+        .method.delete { background: #f56565; }
+
+        .endpoint-path {
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #2d3748;
+            margin: 0.75rem 0;
+            word-break: break-all;
+        }
+
+        .endpoint-desc {
+            color: #718096;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .params {
+            background: #f7fafc;
+            border-radius: 8px;
+            padding: 0.75rem;
+            margin-top: 0.75rem;
+        }
+
+        .params strong {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #4a5568;
+            font-size: 0.85rem;
+        }
+
+        .param-item {
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            color: #667eea;
+            background: white;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            margin: 0.2rem 0;
+            display: inline-block;
+        }
+
+        /* Schema Section */
+        .schema-section {
+            background: rgba(255,255,255,0.95);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-top: 2rem;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+        }
+
+        .schema-section h2 {
+            color: #2d3748;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .schema-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .schema-card {
+            background: #f7fafc;
+            border-radius: 12px;
+            padding: 1.25rem;
+            border: 1px solid #e2e8f0;
+        }
+
+        .schema-card h3 {
+            color: #667eea;
+            margin-bottom: 0.75rem;
+            font-size: 1.1rem;
+        }
+
+        .field-list {
+            list-style: none;
+        }
+
+        .field-list li {
+            padding: 0.3rem 0;
+            font-size: 0.9rem;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .field-name {
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+        }
+
+        .field-type {
+            color: #718096;
+            font-size: 0.8rem;
+        }
+
+        .badge-readonly {
+            background: #c6f6d5;
+            color: #22543d;
+            font-size: 0.7rem;
+            padding: 0.15rem 0.5rem;
+            border-radius: 4px;
+        }
+
+        .badge-required {
+            background: #fed7d7;
+            color: #9b2c2c;
+            font-size: 0.7rem;
+            padding: 0.15rem 0.5rem;
+            border-radius: 4px;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: rgba(255,255,255,0.7);
+        }
+
+        footer a {
+            color: white;
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            .endpoint-grid {
+                grid-template-columns: 1fr;
+            }
+            .schema-grid {
+                grid-template-columns: 1fr;
+            }
+            .header-content {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container header-content">
+            <div class="logo">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1.003 1.003 0 0 0 20 4H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
+                </svg>
+                API Panier
+            </div>
+            <span class="version-badge">v1.0.0</span>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <h1>🚀 API de Gestion de Panier</h1>
+            <p>Une API REST complète pour gérer les paniers d'achat de vos utilisateurs. Ajoutez, modifiez et supprimez des articles en toute simplicité.</p>
+            <div class="hero-buttons">
+                <a href="#endpoints" class="btn btn-primary">Voir les endpoints</a>
+                <a href="#schemas" class="btn btn-secondary">Modèles de données</a>
+            </div>
+        </div>
+    </section>
+
+    <main class="container">
+        <!-- Section Cart -->
+        <h2 class="section-title" id="endpoints">
+            <span>🛒</span> Endpoints Panier (Cart)
+        </h2>
+        <div class="endpoint-grid">
+            <!-- GET /cart/ -->
+            <div class="endpoint-card">
+                <span class="method get">GET</span>
+                <div class="endpoint-path">/cart/</div>
+                <p class="endpoint-desc">Récupère le panier complet de l'utilisateur connecté avec tous les articles, totaux et compteurs.</p>
+                <div class="params">
+                    <strong>Réponse 200 :</strong> <span class="param-item">Cart</span>
+                </div>
+            </div>
+
+            <!-- POST /cart/add/ -->
+            <div class="endpoint-card">
+                <span class="method post">POST</span>
+                <div class="endpoint-path">/cart/add/</div>
+                <p class="endpoint-desc">Ajoute un nouvel article au panier. Nécessite l'ID du produit et la quantité souhaitée.</p>
+                <div class="params">
+                    <strong>Body (JSON) :</strong> <span class="param-item">CartItem</span><br>
+                    <strong>Réponse 201 :</strong> <span class="param-item">CartItem</span>
+                </div>
+            </div>
+
+            <!-- PUT /cart/{product_id}/ -->
+            <div class="endpoint-card">
+                <span class="method put">PUT</span>
+                <div class="endpoint-path">/cart/{product_id}/</div>
+                <p class="endpoint-desc">Remplace complètement la quantité d'un article existant dans le panier.</p>
+                <div class="params">
+                    <strong>Paramètre :</strong> <span class="param-item">product_id (integer)</span><br>
+                    <strong>Body :</strong> <span class="param-item">CartItemUpdate</span>
+                </div>
+            </div>
+
+            <!-- PATCH /cart/{product_id}/ -->
+            <div class="endpoint-card">
+                <span class="method patch">PATCH</span>
+                <div class="endpoint-path">/cart/{product_id}/</div>
+                <p class="endpoint-desc">Modifie partiellement la quantité d'un article. Envoyez uniquement le champ à mettre à jour.</p>
+                <div class="params">
+                    <strong>Paramètre :</strong> <span class="param-item">product_id (integer)</span><br>
+                    <strong>Body :</strong> <span class="param-item">PatchedCartItemUpdate</span>
+                </div>
+            </div>
+
+            <!-- DELETE /cart/remove/{id}/ -->
+            <div class="endpoint-card">
+                <span class="method delete">DELETE</span>
+                <div class="endpoint-path">/cart/remove/{id}/</div>
+                <p class="endpoint-desc">Supprime un article spécifique du panier en utilisant l'identifiant de l'item.</p>
+                <div class="params">
+                    <strong>Paramètre :</strong> <span class="param-item">id (integer)</span><br>
+                    <strong>Réponse 204 :</strong> Pas de contenu
+                </div>
+            </div>
+
+            <!-- DELETE /cart/empty/ -->
+            <div class="endpoint-card">
+                <span class="method delete">DELETE</span>
+                <div class="endpoint-path">/cart/empty/</div>
+                <p class="endpoint-desc">Vide complètement le panier de l'utilisateur en supprimant tous les articles d'un coup.</p>
+                <div class="params">
+                    <strong>Réponse 204 :</strong> Pas de contenu
+                </div>
+            </div>
+        </div>
+
+        <!-- Section Command -->
+        <h2 class="section-title">
+            <span>📦</span> Endpoint Commande (Command)
+        </h2>
+        <div class="endpoint-grid">
+            <div class="endpoint-card">
+                <span class="method post">POST</span>
+                <div class="endpoint-path">/command/</div>
+                <p class="endpoint-desc">Déclenche la création d'une commande à partir du panier actuel. Transforme le panier en commande validée.</p>
+                <div class="params">
+                    <strong>Réponse 200 :</strong> Pas de corps de réponse
+                </div>
+            </div>
+        </div>
+
+        <!-- Section Schémas -->
+        <div class="schema-section" id="schemas">
+            <h2>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/>
+                </svg>
+                Modèles de données (Schemas)
+            </h2>
+            <div class="schema-grid">
+                <!-- Cart Schema -->
+                <div class="schema-card">
+                    <h3>📋 Cart</h3>
+                    <p style="font-size:0.85rem; color:#718096; margin-bottom:0.75rem;">Représentation complète du panier</p>
+                    <ul class="field-list">
+                        <li>
+                            <span class="field-name">id <span class="badge-required">requis</span> <span class="badge-readonly">lecture seule</span></span>
+                            <span class="field-type">integer</span>
+                        </li>
+                        <li>
+                            <span class="field-name">user_id</span>
+                            <span class="field-type">integer (int64)</span>
+                        </li>
+                        <li>
+                            <span class="field-name">items <span class="badge-required">requis</span> <span class="badge-readonly">lecture seule</span></span>
+                            <span class="field-type">CartItem[]</span>
+                        </li>
+                        <li>
+                            <span class="field-name">total <span class="badge-required">requis</span> <span class="badge-readonly">lecture seule</span></span>
+                            <span class="field-type">string</span>
+                        </li>
+                        <li>
+                            <span class="field-name">items_count <span class="badge-required">requis</span> <span class="badge-readonly">lecture seule</span></span>
+                            <span class="field-type">string</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- CartItem Schema -->
+                <div class="schema-card">
+                    <h3>📦 CartItem</h3>
+                    <p style="font-size:0.85rem; color:#718096; margin-bottom:0.75rem;">Article individuel dans le panier</p>
+                    <ul class="field-list">
+                        <li>
+                            <span class="field-name">id <span class="badge-required">requis</span> <span class="badge-readonly">lecture seule</span></span>
+                            <span class="field-type">integer</span>
+                        </li>
+                        <li>
+                            <span class="field-name">product_id <span class="badge-required">requis</span></span>
+                            <span class="field-type">integer (int64)</span>
+                        </li>
+                        <li>
+                            <span class="field-name">quantity</span>
+                            <span class="field-type">integer (min: 0)</span>
+                        </li>
+                        <li>
+                            <span class="field-name">name <span class="badge-required">requis</span> <span class="badge-readonly">lecture seule</span></span>
+                            <span class="field-type">string</span>
+                        </li>
+                        <li>
+                            <span class="field-name">price <span class="badge-required">requis</span> <span class="badge-readonly">lecture seule</span></span>
+                            <span class="field-type">string</span>
+                        </li>
+                        <li>
+                            <span class="field-name">subtotal <span class="badge-required">requis</span> <span class="badge-readonly">lecture seule</span></span>
+                            <span class="field-type">string</span>
+                        </li>
+                        <li>
+                            <span class="field-name">product_details <span class="badge-required">requis</span> <span class="badge-readonly">lecture seule</span></span>
+                            <span class="field-type">string</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- CartItemUpdate Schema -->
+                <div class="schema-card">
+                    <h3>✏️ CartItemUpdate</h3>
+                    <p style="font-size:0.85rem; color:#718096; margin-bottom:0.75rem;">Utilisé pour les mises à jour complètes (PUT)</p>
+                    <ul class="field-list">
+                        <li>
+                            <span class="field-name">quantity</span>
+                            <span class="field-type">integer (min: 0)</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- PatchedCartItemUpdate Schema -->
+                <div class="schema-card">
+                    <h3>🔧 PatchedCartItemUpdate</h3>
+                    <p style="font-size:0.85rem; color:#718096; margin-bottom:0.75rem;">Utilisé pour les mises à jour partielles (PATCH)</p>
+                    <ul class="field-list">
+                        <li>
+                            <span class="field-name">quantity</span>
+                            <span class="field-type">integer (min: 0, optionnel)</span>
+                        </li>
+                    </ul>
+                    <p style="font-size:0.8rem; color:#718096; margin-top:0.75rem; font-style:italic;">Tous les champs sont optionnels pour une modification partielle.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>📄 Documentation générée automatiquement à partir du fichier OpenAPI 3.0.3</p>
+            <p style="margin-top:0.5rem; font-size:0.9rem;">Votre API est prête à être intégrée. Consultez le schéma complet pour plus de détails sur les types de données.</p>
+        </div>
+    </footer>
+</body>
+</html>

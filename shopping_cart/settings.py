@@ -112,13 +112,28 @@ REST_FRAMEWORK = {
 }
 
 SPECTACULAR_SETTINGS = {
-    'TITLE': 'Your Project API',
-    'DESCRIPTION': 'Your project description',
+    'TITLE': ' shopping_cart API',
+    'DESCRIPTION': "Une API REST complète pour gérer les paniers d'achat de vos utilisateurs. Ajoutez, modifiez et supprimez des articles en toute simplicité.",
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
     'SWAGGER_UI_DIST': 'SIDECAR',  # shorthand to use the sidecar instead
     'SWAGGER_UI_FAVICON_HREF': 'SIDECAR',
     'REDOC_DIST': 'SIDECAR',
+    "APPEND_COMPONENTS": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT",
+            }
+        }
+    },
+
+    "SECURITY": [
+        {
+            "bearerAuth": [],
+        }
+    ],
     # OTHER SETTINGS
 }
 
@@ -225,7 +240,7 @@ LOGGING = {
         },
     },
     'loggers': {
-        'app.serializers': { 
+        'app': { 
                     'handlers': ['file', 'console'],
             'level': 'DEBUG' if DEBUG else 'INFO',
             'propagate': True,

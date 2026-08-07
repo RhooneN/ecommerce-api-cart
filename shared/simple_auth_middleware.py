@@ -7,7 +7,7 @@ class SimpleAuthMiddleware:
         
     def __call__(self, request):
         # Skip for non-API paths
-        non_api_paths = ['/admin/', '/static/', '/auth/login/', '/auth/register/']
+        non_api_paths = ['/admin/', '/static/', '/auth/login/', '/auth/register/', "/api/schema/"]
         if any(request.path.startswith(path) for path in non_api_paths):
             return self.get_response(request)
         
